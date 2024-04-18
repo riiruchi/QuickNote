@@ -1,8 +1,8 @@
-////
-////  AddNotesViewController.swift
-////  QuickNote
-////
-////  Created by Ruchira  on 17/04/24.
+//
+//  AddNotesViewController.swift
+//  QuickNote
+//
+//  Created by Ruchira  on 17/04/24.
 
 import UIKit
 
@@ -59,6 +59,10 @@ class AddNoteViewController: UIViewController {
         // Description text view
         descriptionTextView.isScrollEnabled = true
         descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
+        descriptionTextView.text = "" // Ensure the initial text is empty
+        descriptionTextView.textColor = UIColor.lightGray // Set placeholder color
+        descriptionTextView.text = "Description" // Set placeholder text
+        descriptionTextView.delegate = self // Set delegate to handle placeholder behavior
         view.addSubview(descriptionTextView)
         
         // Set constraints
@@ -78,52 +82,55 @@ class AddNoteViewController: UIViewController {
     }
     
     private func setupCustomOptionsView() {
-        // Custom options view
-        customOptionsView.backgroundColor = .tertiarySystemBackground
-        customOptionsView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(customOptionsView)
-        
-        // Checklist button
-        checklistButton.setTitle("Checklist", for: .normal)
-        checklistButton.translatesAutoresizingMaskIntoConstraints = false
-        checklistButton.addTarget(self, action: #selector(addChecklistItem), for: .touchUpInside)
-        
-        // Bold button
-        boldButton.setTitle("Bold", for: .normal)
-        boldButton.translatesAutoresizingMaskIntoConstraints = false
-        boldButton.addTarget(self, action: #selector(boldButtonTapped), for: .touchUpInside)
-        
-        // Italic button
-        italicButton.setTitle("Italic", for: .normal)
-        italicButton.translatesAutoresizingMaskIntoConstraints = false
-        italicButton.addTarget(self, action: #selector(italicButtonTapped), for: .touchUpInside)
-        
-        
-        // Stack view for buttons
-        let buttonsStackView = UIStackView(arrangedSubviews: [checklistButton, boldButton, italicButton])
-        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
-        buttonsStackView.spacing = 20 // Adjust the spacing between buttons
-        buttonsStackView.distribution = .fillEqually // Make buttons equally spaced
-        customOptionsView.addSubview(buttonsStackView)
-        
-        // Set constraints
-        NSLayoutConstraint.activate([
-            // Custom options view constraints
-            customOptionsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            customOptionsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            customOptionsView.heightAnchor.constraint(equalToConstant: 50),
+            // Custom options view
+            customOptionsView.backgroundColor = .tertiarySystemBackground
+            customOptionsView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(customOptionsView)
             
-            // Stack view constraints
-            buttonsStackView.leadingAnchor.constraint(equalTo: customOptionsView.leadingAnchor, constant: 20),
-            buttonsStackView.trailingAnchor.constraint(equalTo: customOptionsView.trailingAnchor, constant: -20),
-            buttonsStackView.topAnchor.constraint(equalTo: customOptionsView.topAnchor),
-            buttonsStackView.bottomAnchor.constraint(equalTo: customOptionsView.bottomAnchor)
-        ])
-        
-        // Bottom constraint will be adjusted based on keyboard appearance
-        customOptionsViewBottomConstraint = customOptionsView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        customOptionsViewBottomConstraint.isActive = true
-    }
+            // Checklist button
+            let checklistImage = UIImage(systemName: "checkmark.circle") // Replace "checkmark.circle" with the SF Symbol name you want to use
+            checklistButton.setImage(checklistImage, for: .normal)
+            checklistButton.translatesAutoresizingMaskIntoConstraints = false
+            checklistButton.addTarget(self, action: #selector(addChecklistItem), for: .touchUpInside)
+            
+            // Bold button
+            let boldImage = UIImage(systemName: "bold") // Replace "bold" with the SF Symbol name you want to use
+            boldButton.setImage(boldImage, for: .normal)
+            boldButton.translatesAutoresizingMaskIntoConstraints = false
+            boldButton.addTarget(self, action: #selector(boldButtonTapped), for: .touchUpInside)
+            
+            // Italic button
+            let italicImage = UIImage(systemName: "italic") // Replace "italic" with the SF Symbol name you want to use
+            italicButton.setImage(italicImage, for: .normal)
+            italicButton.translatesAutoresizingMaskIntoConstraints = false
+            italicButton.addTarget(self, action: #selector(italicButtonTapped), for: .touchUpInside)
+
+            
+            // Stack view for buttons
+            let buttonsStackView = UIStackView(arrangedSubviews: [checklistButton, boldButton, italicButton])
+            buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
+            buttonsStackView.spacing = 20 // Adjust the spacing between buttons
+            buttonsStackView.distribution = .fillEqually // Make buttons equally spaced
+            customOptionsView.addSubview(buttonsStackView)
+            
+            // Set constraints
+            NSLayoutConstraint.activate([
+                // Custom options view constraints
+                customOptionsView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                customOptionsView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                customOptionsView.heightAnchor.constraint(equalToConstant: 50),
+                
+                // Stack view constraints
+                buttonsStackView.leadingAnchor.constraint(equalTo: customOptionsView.leadingAnchor, constant: 20),
+                buttonsStackView.trailingAnchor.constraint(equalTo: customOptionsView.trailingAnchor, constant: -20),
+                buttonsStackView.topAnchor.constraint(equalTo: customOptionsView.topAnchor),
+                buttonsStackView.bottomAnchor.constraint(equalTo: customOptionsView.bottomAnchor)
+            ])
+            
+            // Bottom constraint will be adjusted based on keyboard appearance
+            customOptionsViewBottomConstraint = customOptionsView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            customOptionsViewBottomConstraint.isActive = true
+        }
     
     @objc private func boldButtonTapped() {
         applyTextStyle(isBold: true)
@@ -148,11 +155,15 @@ class AddNoteViewController: UIViewController {
         // Apply italic style if needed
         if isItalic {
             let italicFont = UIFont.italicSystemFont(ofSize: descriptionTextView.font?.pointSize ?? UIFont.systemFontSize)
-            attributedString.addAttribute(.font, value: italicFont, range: NSRange(location: 0, length: selectedText.count))
+            attributedString.addAttribute(.font, 
+                                          value: italicFont,
+                                          range: NSRange(location: 0,
+                                          length: selectedText.count))
         }
         
         // Replace the selected text with the styled text
-        descriptionTextView.textStorage.replaceCharacters(in: descriptionTextView.selectedRange, with: attributedString)
+        descriptionTextView.textStorage.replaceCharacters(in: descriptionTextView.selectedRange, 
+                                                          with: attributedString)
     }
     
     @objc private func addChecklistItem() {
@@ -165,8 +176,15 @@ class AddNoteViewController: UIViewController {
     }
     
     private func registerForKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, 
+                                               selector: #selector(keyboardWillShow(_:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self, 
+                                               selector: #selector(keyboardWillHide(_:)),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
     }
     
     @objc private func keyboardWillShow(_ notification: Notification) {
@@ -192,11 +210,9 @@ class AddNoteViewController: UIViewController {
     
     @objc private func didTapSaveButton() {
         guard let title = titleTextField.text, !title.isEmpty else {
-            let alertController = UIAlertController(
-                title: "Fields Required",
-                message: "Please enter a title and body for your note!",
-                preferredStyle: .alert
-            )
+            let alertController = UIAlertController(title: "Fields Required",
+                                                    message: "Please enter a title and body for your note!",
+                                                    preferredStyle: .alert)
             return
         }
         
@@ -217,7 +233,8 @@ class AddNoteViewController: UIViewController {
             var formattedText = ""
             var checklistItems: [String] = []
             
-            attributedText.enumerateAttributes(in: NSRange(location: 0, length: attributedText.length), options: []) { attributes, range, _ in
+            attributedText.enumerateAttributes(in: NSRange(location: 0, length: attributedText.length), 
+                                               options: []) { attributes, range, _ in
                 let font = attributes[.font] as? UIFont
                 
                 // Check for bold or italic
@@ -235,11 +252,11 @@ class AddNoteViewController: UIViewController {
                 formattedText += text
                 
                 // Check for checklist items
-                if let bullet = attributes[.attachment] as? NSTextAttachment, let image = bullet.image, image.size == CGSize(width: 12, height: 12) {
+                if let bullet = attributes[.attachment] as? NSTextAttachment, 
+                    let image = bullet.image, image.size == CGSize(width: 12, height: 12) {
                     checklistItems.append(text)
                 }
             }
-            
             return (formattedText, checklistItems)
         }
         
@@ -247,7 +264,6 @@ class AddNoteViewController: UIViewController {
             // Save the data into Core Data with the provided formatting information
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
             let managedContext = appDelegate.persistentContainer.viewContext
-            
             let note = QuickNote(context: managedContext)
             note.title = title
             note.body = body
@@ -278,4 +294,20 @@ class AddNoteViewController: UIViewController {
         }
     }
     
+}
+
+extension AddNoteViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = nil
+            textView.textColor = UIColor.black
+        }
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Description"
+            textView.textColor = UIColor.lightGray
+        }
+    }
 }
