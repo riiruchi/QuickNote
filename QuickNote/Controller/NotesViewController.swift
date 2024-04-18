@@ -5,11 +5,26 @@
 //  Created by Ruchira  on 17/04/24.
 //
 import UIKit
+import CoreData
 
 class NotesViewController: UIViewController {
     
     private var dataSource: UICollectionViewDiffableDataSource<Section, QuickNote>! = nil
-    private var notesCollectionView: UICollectionView! = nil
+        private var notesCollectionView: UICollectionView! = nil
+        
+        private lazy var viewModel: NotesViewModel = {
+            return NotesViewModel(managedContext: persistentContainer.viewContext)
+        }()
+        
+        lazy var persistentContainer: NSPersistentContainer = {
+            let container = NSPersistentContainer(name: "Note")
+            container.loadPersistentStores { _, error in
+                if let error = error {
+                    fatalError("Failed to load Core Data stack: \(error)")
+                }
+            }
+            return container
+        }()
     
     private var notes: [QuickNote]?
 

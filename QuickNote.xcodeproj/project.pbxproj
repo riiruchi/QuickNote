@@ -20,8 +20,6 @@
 		184C099B2BD154DF004C010D /* NotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C099A2BD154DF004C010D /* NotesViewModel.swift */; };
 		184C099D2BD15EDC004C010D /* NoteDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C099C2BD15EDC004C010D /* NoteDetailViewController.swift */; };
 		184C099F2BD19C24004C010D /* AddNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C099E2BD19C24004C010D /* AddNoteViewModel.swift */; };
-		184C09A12BD19C39004C010D /* NoteDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09A02BD19C39004C010D /* NoteDetailViewModel.swift */; };
-		184C09A32BD19C7E004C010D /* QuickNoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09A22BD19C7E004C010D /* QuickNoteViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,8 +38,6 @@
 		184C099A2BD154DF004C010D /* NotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewModel.swift; sourceTree = "<group>"; };
 		184C099C2BD15EDC004C010D /* NoteDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailViewController.swift; sourceTree = "<group>"; };
 		184C099E2BD19C24004C010D /* AddNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteViewModel.swift; sourceTree = "<group>"; };
-		184C09A02BD19C39004C010D /* NoteDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailViewModel.swift; sourceTree = "<group>"; };
-		184C09A22BD19C7E004C010D /* QuickNoteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickNoteViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,10 +115,8 @@
 		181C35572BCFF6870046D22A /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				184C09A22BD19C7E004C010D /* QuickNoteViewModel.swift */,
 				184C099A2BD154DF004C010D /* NotesViewModel.swift */,
 				184C099E2BD19C24004C010D /* AddNoteViewModel.swift */,
-				184C09A02BD19C39004C010D /* NoteDetailViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -214,14 +208,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				184C099F2BD19C24004C010D /* AddNoteViewModel.swift in Sources */,
-				184C09A32BD19C7E004C010D /* QuickNoteViewModel.swift in Sources */,
 				184C099B2BD154DF004C010D /* NotesViewModel.swift in Sources */,
 				181C35422BCFF64F0046D22A /* NotesViewController.swift in Sources */,
 				184C099D2BD15EDC004C010D /* NoteDetailViewController.swift in Sources */,
 				181C355F2BCFFBD40046D22A /* Extensions.swift in Sources */,
 				181C355C2BCFFAF20046D22A /* AddNoteViewController.swift in Sources */,
 				181C35612BCFFFB90046D22A /* Model.swift in Sources */,
-				184C09A12BD19C39004C010D /* NoteDetailViewModel.swift in Sources */,
 				181C35482BCFF64F0046D22A /* QuickNote.xcdatamodeld in Sources */,
 				181C353E2BCFF64F0046D22A /* AppDelegate.swift in Sources */,
 				181C35402BCFF64F0046D22A /* SceneDelegate.swift in Sources */,
