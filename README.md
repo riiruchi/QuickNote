@@ -1,7 +1,3 @@
-Certainly! Here's a README file for the QuickNote repository:
-
----
-
 # QuickNote
 
 QuickNote is an iOS note-taking application that allows users to create and manage notes with various features. It provides a simple and intuitive interface for users to jot down their thoughts, create checklists, and format text.
