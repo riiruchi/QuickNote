@@ -6,11 +6,24 @@
 //
 import UIKit
 
+/*
+ Class: NotesViewController
+ Description: This class represents the view controller responsible for displaying notes.
+*/
+
 class NotesViewController: UIViewController {
+    
+    // MARK: - Instance Variables
     
     private var dataSource: UICollectionViewDiffableDataSource<Section, QuickNote>! = nil
     private var notesCollectionView: UICollectionView! = nil
     private lazy var viewModel: NotesViewModel = NotesViewModel()
+    
+    /*
+    Method: viewDidLoad
+    Description: This method is called after the controller's view is loaded into memory.
+    */
+    // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,14 +38,24 @@ class NotesViewController: UIViewController {
         observeViewState()
         viewModel.fetchNotes()
     }
-
+    
+    /*
+    Method: observeViewState
+    Description: Observes changes in the view state of the viewModel.
+    */
+    
     private func observeViewState() {
             self.viewModel.onViewStateChange = { _ in
                 self.onStateChange()
             }
             onStateChange()
     }
-
+    
+    /*
+    Method: onStateChange
+    Description: Handles state changes in the viewModel.
+    */
+    
     private func onStateChange() {
         switch viewModel.viewState {
             case .empty:
@@ -47,6 +70,12 @@ class NotesViewController: UIViewController {
         }
     }
     
+    /*
+    Method: didTapAddButton
+    Description: Invoked when the add button is tapped.
+    */
+    // MARK: - Actions
+    
     @objc
     private func didTapAddButton() {
         let addNoteVC = AddNoteViewController()
@@ -56,11 +85,21 @@ class NotesViewController: UIViewController {
         navVC.modalPresentationStyle = .formSheet
         present(navVC, animated: true, completion: nil)
     }
-
+    
+    /*
+    Method: createLayout
+    Description: Creates and returns the layout for the collectionView.
+    */
+    
     private func createLayout() -> UICollectionViewLayout {
         let config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
+    
+    /*
+    Method: configureCollectionView
+    Description: Configures the collectionView.
+    */
     
     private func configureCollectionView() {
         notesCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
@@ -68,7 +107,12 @@ class NotesViewController: UIViewController {
         view.addSubview(notesCollectionView)
         notesCollectionView.delegate = self
     }
-   
+
+    /*
+    Method: configureDataSource
+    Description: Configures the dataSource for the collectionView.
+    */
+    
     private func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, QuickNote> { cell, indexPath, note in
             var content = cell.defaultContentConfiguration()
@@ -108,6 +152,12 @@ class NotesViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
+    /*
+    Method: updateCollectionView
+    Description: Updates the collectionView with new data.
+    Parameters: - isFromDelete: A boolean indicating if the update is due to a deletion operation.
+    */
+    
     private func updateCollectionView(isFromDelete: Bool = false) {
        
         var snapshot = dataSource.snapshot()
@@ -124,6 +174,11 @@ class NotesViewController: UIViewController {
         
     }
 }
+
+/*
+Extension: NotesViewController - UICollectionViewDelegate
+Description: Extension providing UICollectionViewDelegate conformance for NotesViewController.
+*/
 
 extension NotesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -142,9 +197,13 @@ extension NotesViewController: UICollectionViewDelegate {
     }
 }
 
+/*
+Extension: NotesViewController - AddNoteViewControllerDelegate
+Description: Extension providing AddNoteViewControllerDelegate conformance for NotesViewController.
+*/
+
 extension NotesViewController: AddNoteViewControllerDelegate {
     func didFinishAddingNote() {
         viewModel.fetchNotes()
-        //updateCollectionView()
     }
 }

@@ -7,7 +7,20 @@
 import Foundation
 import UIKit
 
+/**
+`AddNoteViewModel` manages the business logic related to adding notes within the application.
+*/
+
 class AddNoteViewModel {
+    
+    /**
+    Saves a note with the provided title and body.
+    - Parameters:
+    - title: The title of the note.
+    - body: The body text of the note.
+    - completion: A closure to be called after the note is saved, indicating the result of the operation.
+    - result: A `Result` enum with either a success or failure case.
+    */
     
     func saveNote(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {
         do {
@@ -17,7 +30,16 @@ class AddNoteViewModel {
             completion(.failure(error))
         }
     }
-
+    
+    /**
+    Saves a note with the provided title and attributed text.
+    - Parameters:
+    - title: The title of the note.
+    - attributedText: The attributed text of the note body, possibly containing formatting.
+    - completion: A closure to be called after the note is saved, indicating the result of the operation.
+    - result: A `Result` enum with either a success or failure case.
+    */
+    
     func saveNoteWithAttributedText(title: String, attributedText: NSAttributedString, completion: @escaping (Result<Void, Error>) -> Void) {
         let (formattedText, _) = parseAttributedText(attributedText)
         do {
@@ -28,6 +50,12 @@ class AddNoteViewModel {
             completion(.failure(error))
         }
     }
+    
+    /**
+    Parses the given attributed text to extract formatting information.
+    - Parameter attributedText: The attributed text to be parsed.
+    - Returns: A tuple containing the formatted text and any checklist items extracted from the attributed text.
+    */
     
     func parseAttributedText(_ attributedText: NSAttributedString) -> (String, [String]) {
         var formattedText = ""

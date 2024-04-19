@@ -6,25 +6,36 @@
 //
 
 import CoreData
+    
+/**
+   Enumeration representing sections within the `QuickNote` entity.
+*/
 
-   enum Section: Hashable {
-       case main
-   }
+enum Section: Hashable {
+    /// Represents the main section.
+    case main
+}
 
-   @objc(Note)
-   public class QuickNote: NSManagedObject {
+/**
+   Represents a Quick Note entity managed by Core Data.
+*/
 
-       @NSManaged public var title: String
-       @NSManaged public var body: String
-       @NSManaged public var created: Date
+@objc(Note)
+public class QuickNote: NSManagedObject {
 
-   }
+    @NSManaged public var title: String
+    @NSManaged public var body: String
+    @NSManaged public var created: Date
+}
 
-   extension QuickNote {
-       @nonobjc public class func fetchRequest() ->
-            NSFetchRequest<QuickNote> {
-           NSFetchRequest<QuickNote>(entityName: "Note")
+/**
+Creates a fetch request for `QuickNote` entities.
+- Returns: A fetch request for `QuickNote` entities.
+*/
+
+extension QuickNote {
+    @nonobjc public class func fetchRequest() ->
+        NSFetchRequest<QuickNote> {
+        NSFetchRequest<QuickNote>(entityName: "Note")
        }
-   }
-
-
+}

@@ -6,11 +6,22 @@
 
 import UIKit
 
+/*
+Protocol: AddNoteViewControllerDelegate
+Description: Defines a delegate protocol for notifying when a note is added in the AddNoteViewController.
+*/
+
 protocol AddNoteViewControllerDelegate {
     func didFinishAddingNote()
 }
 
+/*
+Class: AddNoteViewController
+Description: This class represents the view controller responsible for adding new notes.
+*/
+
 class AddNoteViewController: UIViewController {
+    // MARK: - Instance Variables
     
     var delegate: AddNoteViewControllerDelegate?
     private lazy var viewModel = AddNoteViewModel()
@@ -33,6 +44,12 @@ class AddNoteViewController: UIViewController {
     // Constraints for customOptionsView
     private var customOptionsViewBottomConstraint: NSLayoutConstraint!
     
+    /*
+    Method: viewDidLoad
+    Description: Called after the controller's view is loaded into memory.
+    */
+    // MARK: - View Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -50,6 +67,11 @@ class AddNoteViewController: UIViewController {
         descriptionTextView.font = UIFont.systemFont(ofSize: 18)
         
     }
+    
+    /*
+    Method: setupUI
+    Description: Sets up the UI components including title text field and description text view.
+    */
     
     private func setupUI() {
         // Title text field
@@ -81,6 +103,11 @@ class AddNoteViewController: UIViewController {
             descriptionTextView.bottomAnchor.constraint(equalTo: customOptionsView.topAnchor, constant: -20)
         ])
     }
+    
+    /*
+    Method: setupCustomOptionsView
+    Description: Configures the custom options view with checklist, bold, and italic buttons.
+    */
     
     private func setupCustomOptionsView() {
             // Custom options view
@@ -133,13 +160,33 @@ class AddNoteViewController: UIViewController {
             customOptionsViewBottomConstraint.isActive = true
         }
     
+    /*
+    Method: boldButtonTapped
+    Description: Applies bold text style to the selected text in the descriptionTextView.
+    */
+    // MARK: - Actions
+
     @objc private func boldButtonTapped() {
         applyTextStyle(isBold: true)
     }
     
+    /*
+    Method: italicButtonTapped
+    Description: Applies italic text style to the selected text in the descriptionTextView.
+    */
+    // MARK: - Actions
+
     @objc private func italicButtonTapped() {
         applyTextStyle(isBold: false, isItalic: true)
     }
+    
+    /*
+    Method: applyTextStyle
+    Description: Applies the specified text style to the selected text in the descriptionTextView.
+    Parameters:
+    - isBold: A boolean indicating whether to apply bold style.
+    - isItalic: A boolean indicating whether to apply italic style.
+    */
     
     private func applyTextStyle(isBold: Bool = false, isItalic: Bool = false) {
         guard let selectedRange = descriptionTextView.selectedTextRange else { return }
@@ -167,6 +214,11 @@ class AddNoteViewController: UIViewController {
                                                           with: attributedString)
     }
     
+    /*
+    Method: addChecklistItem
+    Description: Adds a checklist item to the description text view.
+    */
+    
     @objc private func addChecklistItem() {
         // Append the round checkbox icon to the description text view
         if let currentText = descriptionTextView.text, !currentText.isEmpty {
@@ -175,6 +227,11 @@ class AddNoteViewController: UIViewController {
             descriptionTextView.text = "○ " // Use round bullet character
         }
     }
+    
+    /*
+    Method: registerForKeyboardNotifications
+    Description: Registers for keyboard notifications to adjust the layout when the keyboard appears or disappears.
+    */
     
     private func registerForKeyboardNotifications() {
         NotificationCenter.default.addObserver(self,
@@ -188,6 +245,12 @@ class AddNoteViewController: UIViewController {
                                                object: nil)
     }
     
+    /*
+    Method: keyboardWillShow
+    Description: Called when the keyboard is about to be shown.
+    Parameters: - notification: The notification object containing information about the keyboard.
+    */
+    
     @objc private func keyboardWillShow(_ notification: Notification) {
         guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         let keyboardHeight = keyboardFrame.height
@@ -198,6 +261,12 @@ class AddNoteViewController: UIViewController {
         }
     }
     
+    /*
+    Method: keyboardWillHide
+    Description: Called when the keyboard is about to be hidden.
+    Parameters: - notification: The notification object containing information about the keyboard.
+    */
+    
     @objc private func keyboardWillHide(_ notification: Notification) {
         customOptionsViewBottomConstraint.constant = 0
         UIView.animate(withDuration: 0.3) {
@@ -205,10 +274,21 @@ class AddNoteViewController: UIViewController {
         }
     }
     
+    /*
+     Method: deinit
+     Description: Performs cleanup when the instance is deallocated.
+    */
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
+    /*
+     Method: didTapSaveButton
+     Description: Invoked when the save button is tapped.
+    */
+    // MARK: - Actions
+
     @objc private func didTapSaveButton() {
         guard let title = titleTextField.text, !title.isEmpty else {
            
@@ -233,6 +313,12 @@ class AddNoteViewController: UIViewController {
         viewModel.saveNoteWithAttributedText(title: title, attributedText: attributedText, completion: handleSaveCompletion)
     }
     
+    /*
+    Method: handleSaveCompletion
+    Description: Handles the completion of the save operation.
+    Parameters: - result: A Result object containing either a success or failure case.
+    */
+    
     private func handleSaveCompletion(result: Result<Void, Error>) {
         switch result {
         case .success:
@@ -252,6 +338,11 @@ class AddNoteViewController: UIViewController {
         }
     }
 }
+
+/*
+Extension: AddNoteViewController
+Description: UITextViewDelegate methods implementation for handling placeholder behavior.
+*/
 
 extension AddNoteViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
