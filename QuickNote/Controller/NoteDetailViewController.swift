@@ -14,12 +14,10 @@ It contains UI elements for displaying and modifying the title and body of the n
 
 class NoteDetailViewController: UIViewController {
     // MARK: - Instance Variables
+    private lazy var viewModel: NoteDetailsViewModel = NoteDetailsViewModel()
     
     /// The note to be displayed and edited by this view controller.
     var note: QuickNote?
-    
-    /// The reference to the application's delegate.
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     /// The text field for editing the title of the note.
     private var titleField: UITextField = {
@@ -48,14 +46,23 @@ class NoteDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
+        viewModel.configure(with: note)
         if let note = note {
             titleField.text = note.title
             bodyTextView.attributedText = note.body.getAttributedBodyText()
         }
-        
-        bodyTextView.delegate = self
-        titleField.delegate = self
+    }
+    
+    /**
+    Configures the view with data from the view model's note.
+    If a note exists in the view model, sets the text of the title field to the note's title
+    and sets the attributed text of the body text view to the note's body with attributed formatting applied.
+    */
+    
+    private func configureView() {
+        guard let note = viewModel.note else { return }
+        titleField.text = note.title
+        bodyTextView.attributedText = note.body.getAttributedBodyText()
     }
     
     /**
@@ -72,52 +79,3 @@ class NoteDetailViewController: UIViewController {
         bodyTextView.frame = CGRect(x: 8, y: titleField.bottom + 8, width: view.width - 16, height: view.bottom - 220)
     }
 }
-
-/**
-   Extension of `NoteDetailViewController` conforming to `UITextViewDelegate` and `UITextFieldDelegate`.
-   It provides implementations for handling text field and text view editing events.
-*/
-
-extension NoteDetailViewController: UITextViewDelegate, UITextFieldDelegate {
-    
-    /**
-    Delegate method called when editing of a text field ends.
-    - Parameter textField: The text field that ended editing.
-    */
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        resignFirstResponder()
-        guard let note = self.note else { return }
-        if textField == titleField && titleField.text!.trimmingCharacters(in: .whitespacesAndNewlines) != note.title {
-            let managedContext = appDelegate.persistentContainer.viewContext
-            note.title = titleField.text!.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                fatalError("\(error.userInfo)")
-            }
-        }
-    }
-    
-    /**
-    Delegate method called when editing of a text view ends.
-    - Parameter textView: The text view that ended editing.
-    */
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        resignFirstResponder()
-        guard let note = self.note else { return }
-        if textView == bodyTextView && bodyTextView.text.trimmingCharacters(in: .whitespacesAndNewlines) != note.body {
-            let managedContext = appDelegate.persistentContainer.viewContext
-            note.body = bodyTextView.text
-            
-            do {
-                try managedContext.save()
-            } catch let error as NSError {
-                fatalError("\(error.userInfo)")
-            }
-        }
-    }
-}
-

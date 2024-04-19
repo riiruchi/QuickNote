@@ -23,6 +23,7 @@
 		184C09A52BD23198004C010D /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09A42BD23198004C010D /* String+Ext.swift */; };
 		184C09A72BD236B3004C010D /* ViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09A62BD236B3004C010D /* ViewState.swift */; };
 		184C09A92BD23E00004C010D /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09A82BD23E00004C010D /* CoreDataManager.swift */; };
+		184C09AB2BD32DFB004C010D /* NoteDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184C09AA2BD32DFB004C010D /* NoteDetailsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		184C09A42BD23198004C010D /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		184C09A62BD236B3004C010D /* ViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewState.swift; sourceTree = "<group>"; };
 		184C09A82BD23E00004C010D /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		184C09AA2BD32DFB004C010D /* NoteDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 			children = (
 				184C099A2BD154DF004C010D /* NotesViewModel.swift */,
 				184C099E2BD19C24004C010D /* AddNoteViewModel.swift */,
+				184C09AA2BD32DFB004C010D /* NoteDetailsViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 				184C09A92BD23E00004C010D /* CoreDataManager.swift in Sources */,
 				181C35402BCFF64F0046D22A /* SceneDelegate.swift in Sources */,
 				184C09A52BD23198004C010D /* String+Ext.swift in Sources */,
+				184C09AB2BD32DFB004C010D /* NoteDetailsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
