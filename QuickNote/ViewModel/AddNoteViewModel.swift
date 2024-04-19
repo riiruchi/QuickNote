@@ -7,8 +7,6 @@
 import Foundation
 import UIKit
 
-import Foundation
-
 class AddNoteViewModel {
     
     func saveNote(title: String, body: String, completion: @escaping (Result<Void, Error>) -> Void) {

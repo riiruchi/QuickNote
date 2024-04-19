@@ -76,12 +76,12 @@
 		181C353C2BCFF64F0046D22A /* QuickNote */ = {
 			isa = PBXGroup;
 			children = (
-				181C355D2BCFFBB70046D22A /* Extension */,
-				181C35552BCFF6710046D22A /* Controller */,
 				181C35582BCFF6970046D22A /* Managers */,
+				181C355D2BCFFBB70046D22A /* Extension */,
+				181C35542BCFF6620046D22A /* Common */,
+				181C35552BCFF6710046D22A /* Controller */,
 				181C35572BCFF6870046D22A /* ViewModel */,
 				181C35562BCFF6810046D22A /* Model */,
-				181C35542BCFF6620046D22A /* Common */,
 				181C35432BCFF64F0046D22A /* Main.storyboard */,
 				181C35492BCFF6510046D22A /* Assets.xcassets */,
 				181C354B2BCFF6510046D22A /* LaunchScreen.storyboard */,

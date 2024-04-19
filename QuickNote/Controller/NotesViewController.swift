@@ -58,16 +58,7 @@ class NotesViewController: UIViewController {
     }
 
     private func createLayout() -> UICollectionViewLayout {
-        var config = UICollectionLayoutListConfiguration(appearance: .plain)
-        
-        config.trailingSwipeActionsConfigurationProvider = { indexPath in
-            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completion in
-                self?.deleteItem(at: indexPath)
-                completion(true)
-            }
-            return UISwipeActionsConfiguration(actions: [deleteAction])
-        }
-        
+        let config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
@@ -87,7 +78,7 @@ class NotesViewController: UIViewController {
             content.textProperties.color = .label
             content.secondaryTextProperties.font = UIFont.systemFont(ofSize: 16)
             content.secondaryTextProperties.color = .secondaryLabel
-            //content.secondaryTextProperties.numberOfLines = 1
+            content.secondaryTextProperties.numberOfLines = 1
             
             let bodyTextArray = note.body.components(separatedBy: " ")
             
@@ -117,19 +108,20 @@ class NotesViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private func updateCollectionView() {
+    private func updateCollectionView(isFromDelete: Bool = false) {
+       
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems(viewModel.notes)
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    private func deleteItem(at indexPath: IndexPath) {
-        guard let noteToDelete = dataSource.itemIdentifier(for: indexPath) else { return }
-
-        viewModel.deleteItem(noteToDelete) { [weak self] in
-            // After deletion, reload the collection view data
-            self?.updateCollectionView()
+        if isFromDelete {
+            snapshot.reconfigureItems(viewModel.notes)
+        } else {
+            snapshot.appendItems(viewModel.notes)
         }
+        
+        dataSource.apply(snapshot, animatingDifferences: true) {
+            self.notesCollectionView.reloadData()
+            self.notesCollectionView.collectionViewLayout.invalidateLayout()
+        }
+        
     }
 }
 
@@ -153,6 +145,6 @@ extension NotesViewController: UICollectionViewDelegate {
 extension NotesViewController: AddNoteViewControllerDelegate {
     func didFinishAddingNote() {
         viewModel.fetchNotes()
-        updateCollectionView()
+        //updateCollectionView()
     }
 }

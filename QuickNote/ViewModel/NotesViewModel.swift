@@ -37,13 +37,4 @@ class NotesViewModel {
             self.viewState = .error(error)
         }
     }
-    
-    func deleteItem(_ note: QuickNote, completion: @escaping () -> Void) {
-        do {
-            try CoreDataManager.shared.delete(note: note)
-            completion()
-        } catch let error as NSError {
-            print("Error deleting note: \(error), \(error.userInfo)")
-        }
-    }
 }

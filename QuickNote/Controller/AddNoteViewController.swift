@@ -156,14 +156,14 @@ class AddNoteViewController: UIViewController {
         // Apply italic style if needed
         if isItalic {
             let italicFont = UIFont.italicSystemFont(ofSize: descriptionTextView.font?.pointSize ?? UIFont.systemFontSize)
-            attributedString.addAttribute(.font, 
+            attributedString.addAttribute(.font,
                                           value: italicFont,
                                           range: NSRange(location: 0,
                                           length: selectedText.count))
         }
         
         // Replace the selected text with the styled text
-        descriptionTextView.textStorage.replaceCharacters(in: descriptionTextView.selectedRange, 
+        descriptionTextView.textStorage.replaceCharacters(in: descriptionTextView.selectedRange,
                                                           with: attributedString)
     }
     
@@ -177,12 +177,12 @@ class AddNoteViewController: UIViewController {
     }
     
     private func registerForKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, 
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow(_:)),
                                                name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
         
-        NotificationCenter.default.addObserver(self, 
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillHide(_:)),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
@@ -211,9 +211,15 @@ class AddNoteViewController: UIViewController {
     
     @objc private func didTapSaveButton() {
         guard let title = titleTextField.text, !title.isEmpty else {
-            let alertController = UIAlertController(title: "Fields Required",
-                                                    message: "Please enter a title and body for your note!",
-                                                    preferredStyle: .alert)
+           
+            let alertController = UIAlertController(title: "Fields Required", message: "Please enter a title and body for your note!", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Ok", style: .cancel) { [weak self] _ in
+                guard let self = self else { return }
+                self.dismiss(animated: true, completion: nil)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true)
+
             return
         }
 

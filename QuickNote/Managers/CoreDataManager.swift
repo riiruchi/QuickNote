@@ -38,9 +38,4 @@ class CoreDataManager {
         try context.save()
     }
     
-    func delete(note: QuickNote) throws {
-        let context = persistentContainer.viewContext
-        context.delete(note)
-        try context.save()
-    }
 }
