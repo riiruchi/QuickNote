@@ -26,7 +26,7 @@ class NotesViewController: UIViewController {
             return container
         }()
     
-    private var notes: [QuickNote]?
+    // private var notes: [QuickNote]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,19 +36,37 @@ class NotesViewController: UIViewController {
             target: self,
             action: #selector(didTapAddButton)
         )
-        
         configureCollectionView()
         configureDataSource()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        fetchNotes()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        updateCollectionView()
+        observeViewState()
+        viewModel.fetchNotes()
     }
 
+    private func observeViewState() {
+            self.viewModel.onViewStateChange = { _ in
+                self.onStateChange()
+            }
+            onStateChange()
+        }
+
+        private func onStateChange() {
+             
+            switch viewModel.viewState {
+            case .empty:
+                break
+            case .ready(let status):
+                switch status {
+                case .getNotes:
+                    updateCollectionView()
+                }
+            case .error(let error):
+                
+             break
+                
+            default: break
+            }
+        }
+    
     @objc
     private func didTapAddButton() {
         let addNoteVC = AddNoteViewController()
@@ -79,7 +97,7 @@ class NotesViewController: UIViewController {
         view.addSubview(notesCollectionView)
         notesCollectionView.delegate = self
     }
-    
+   
     private func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, QuickNote> { cell, indexPath, note in
             var content = cell.defaultContentConfiguration()
@@ -89,15 +107,16 @@ class NotesViewController: UIViewController {
             content.textProperties.color = .label
             content.secondaryTextProperties.font = UIFont.systemFont(ofSize: 16)
             content.secondaryTextProperties.color = .secondaryLabel
+            //content.secondaryTextProperties.numberOfLines = 1
             
             let bodyTextArray = note.body.components(separatedBy: " ")
             
             if (bodyTextArray.count > 8) {
                 var bodyText = bodyTextArray[0...8].joined(separator: " ")
                 bodyText.append("...")
-                content.secondaryText = bodyText
+                content.secondaryAttributedText = bodyText.getAttributedBodyText()
             } else {
-                content.secondaryText = note.body
+                content.secondaryAttributedText = note.body.getAttributedBodyText()
             }
             
             cell.contentConfiguration = content
@@ -112,30 +131,28 @@ class NotesViewController: UIViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Section, QuickNote>()
         snapshot.appendSections([.main])
         
-        if let notes = notes {
-            snapshot.appendItems(notes)
-        }
+      
+        snapshot.appendItems(viewModel.notes)
+        
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func fetchNotes() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        do {
-            notes = try managedContext.fetch(QuickNote.fetchRequest())
-        } catch let error as NSError {
-            fatalError("Unable to fetch. \(error) = \(error.userInfo)")
-        }
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+//        let managedContext = appDelegate.persistentContainer.viewContext
+//
+//        do {
+//            notes = try managedContext.fetch(QuickNote.fetchRequest())
+//        } catch let error as NSError {
+//            fatalError("Unable to fetch. \(error) = \(error.userInfo)")
+//        }
     }
     
     private func updateCollectionView() {
-        guard let notes = notes else {
-            return
-        }
+        
         
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems(notes)
+        snapshot.appendItems(viewModel.notes)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -156,8 +173,7 @@ class NotesViewController: UIViewController {
             snapshot.deleteAllItems()
             snapshot.appendSections([.main])
             dataSource.apply(snapshot)
-            
-            fetchNotes()
+            viewModel.fetchNotes()
             updateCollectionView()
             
         } catch let error as NSError {
@@ -186,7 +202,7 @@ extension NotesViewController: UICollectionViewDelegate {
 
 extension NotesViewController: AddNoteViewControllerDelegate {
     func didFinishAddingNote() {
-        fetchNotes()
+        viewModel.fetchNotes()
         updateCollectionView()
     }
 }

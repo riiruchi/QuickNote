@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  UIView+Ext.swift
 //  QuickNote
 //
 //  Created by Ruchira  on 17/04/24.

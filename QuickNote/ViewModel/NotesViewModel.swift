@@ -7,21 +7,45 @@
 
 import CoreData
 
+
+
 class NotesViewModel {
-    private var notes: [QuickNote] = []
+    
+    // MARK: - Success states
+        enum State {
+            case getNotes
+        }
+
+        // MARK: - View state
+        var viewState: ViewState<State> = .empty {
+            didSet {
+                DispatchQueue.main.async {
+                    self.onViewStateChange?(self.viewState)
+                }
+            }
+        }
+
+    var onViewStateChange: ((_ viewState: ViewState<State>) -> Void)?
+    
+    
+    private(set) var notes: [QuickNote] = []
     private let managedContext: NSManagedObjectContext
     
     init(managedContext: NSManagedObjectContext) {
         self.managedContext = managedContext
     }
     
-    func fetchNotes(completion: @escaping ([QuickNote]) -> Void) {
+    func fetchNotes() {
+        
+        guard let appDelegate = AppDelegate.getAppDelegate() else { return }
+        let managedContext = appDelegate.persistentContainer.viewContext
+
         do {
             notes = try managedContext.fetch(QuickNote.fetchRequest())
-            completion(notes)
+            self.viewState = .ready(.getNotes)
+
         } catch let error as NSError {
-            print("Unable to fetch notes: \(error), \(error.userInfo)")
-            completion([])
+            self.viewState = .error(error)
         }
     }
     

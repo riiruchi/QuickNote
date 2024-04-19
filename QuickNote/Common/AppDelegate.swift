@@ -79,3 +79,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate {
+    static func getAppDelegate() ->AppDelegate? {
+        UIApplication.shared.delegate as? AppDelegate
+        
+    }
+}
+

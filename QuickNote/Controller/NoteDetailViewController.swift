@@ -34,7 +34,7 @@ class NoteDetailViewController: UIViewController {
         
         if let note = note {
             titleField.text = note.title
-            bodyTextView.text = note.body
+            bodyTextView.attributedText = note.body.getAttributedBodyText()
         }
         
         bodyTextView.delegate = self
@@ -82,3 +82,4 @@ extension NoteDetailViewController: UITextViewDelegate, UITextFieldDelegate {
         }
     }
 }
+
