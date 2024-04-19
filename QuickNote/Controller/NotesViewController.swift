@@ -5,29 +5,13 @@
 //  Created by Ruchira  on 17/04/24.
 //
 import UIKit
-import CoreData
 
 class NotesViewController: UIViewController {
     
     private var dataSource: UICollectionViewDiffableDataSource<Section, QuickNote>! = nil
-        private var notesCollectionView: UICollectionView! = nil
-        
-        private lazy var viewModel: NotesViewModel = {
-            return NotesViewModel(managedContext: persistentContainer.viewContext)
-        }()
-        
-        lazy var persistentContainer: NSPersistentContainer = {
-            let container = NSPersistentContainer(name: "Note")
-            container.loadPersistentStores { _, error in
-                if let error = error {
-                    fatalError("Failed to load Core Data stack: \(error)")
-                }
-            }
-            return container
-        }()
+    private var notesCollectionView: UICollectionView! = nil
+    private lazy var viewModel: NotesViewModel = NotesViewModel()
     
-    // private var notes: [QuickNote]?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Notes"
@@ -47,11 +31,10 @@ class NotesViewController: UIViewController {
                 self.onStateChange()
             }
             onStateChange()
-        }
+    }
 
-        private func onStateChange() {
-             
-            switch viewModel.viewState {
+    private func onStateChange() {
+        switch viewModel.viewState {
             case .empty:
                 break
             case .ready(let status):
@@ -59,13 +42,10 @@ class NotesViewController: UIViewController {
                 case .getNotes:
                     updateCollectionView()
                 }
-            case .error(let error):
-                
-             break
                 
             default: break
-            }
         }
+    }
     
     @objc
     private func didTapAddButton() {
@@ -137,47 +117,18 @@ class NotesViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    private func fetchNotes() {
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-//        let managedContext = appDelegate.persistentContainer.viewContext
-//
-//        do {
-//            notes = try managedContext.fetch(QuickNote.fetchRequest())
-//        } catch let error as NSError {
-//            fatalError("Unable to fetch. \(error) = \(error.userInfo)")
-//        }
-    }
-    
     private func updateCollectionView() {
-        
-        
         var snapshot = dataSource.snapshot()
         snapshot.appendItems(viewModel.notes)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        let note = self.dataSource.itemIdentifier(for: indexPath)
-        
-        guard let note = note else { return }
-        
-        managedContext.delete(note)
-        
-        do {
-            try managedContext.save()
-            var snapshot = dataSource.snapshot()
-            
-            snapshot.deleteAllItems()
-            snapshot.appendSections([.main])
-            dataSource.apply(snapshot)
-            viewModel.fetchNotes()
-            updateCollectionView()
-            
-        } catch let error as NSError {
-            fatalError("\(error.userInfo)")
+        guard let noteToDelete = dataSource.itemIdentifier(for: indexPath) else { return }
+
+        viewModel.deleteItem(noteToDelete) { [weak self] in
+            // After deletion, reload the collection view data
+            self?.updateCollectionView()
         }
     }
 }
@@ -197,7 +148,6 @@ extension NotesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, canEditItemAt indexPath: IndexPath) -> Bool {
         true
     }
-    
 }
 
 extension NotesViewController: AddNoteViewControllerDelegate {

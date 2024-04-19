@@ -13,6 +13,7 @@ protocol AddNoteViewControllerDelegate {
 class AddNoteViewController: UIViewController {
     
     var delegate: AddNoteViewControllerDelegate?
+    private lazy var viewModel = AddNoteViewModel()
     
     // UI elements
     private let titleTextField = UITextField()
@@ -215,85 +216,35 @@ class AddNoteViewController: UIViewController {
                                                     preferredStyle: .alert)
             return
         }
-        
-        // Extract attributed text from descriptionTextView
+
         guard let attributedText = descriptionTextView.attributedText else {
-            saveNoteToCoreData(title: title, body: descriptionTextView.text)
+            // If no attributed text, save with plain text
+            let plainText = descriptionTextView.text ?? ""
+            viewModel.saveNote(title: title, body: plainText, completion: handleSaveCompletion)
             return
         }
-        
-        // Parse the attributed text to extract formatting information
-        let (formattedText, checklistItems) = parseAttributedText(attributedText)
-        
-        // Save the data into Core Data
-        saveNoteToCoreData(title: title, body: formattedText, checklistItems: checklistItems)
-        
-        
-        func parseAttributedText(_ attributedText: NSAttributedString) -> (String, [String]) {
-            var formattedText = ""
-            var checklistItems: [String] = []
-            
-            attributedText.enumerateAttributes(in: NSRange(location: 0, length: attributedText.length), 
-                                               options: []) { attributes, range, _ in
-                let font = attributes[.font] as? UIFont
-                
-                // Check for bold or italic
-                let isBold = font?.fontDescriptor.symbolicTraits.contains(.traitBold) ?? false
-                let isItalic = font?.fontDescriptor.symbolicTraits.contains(.traitItalic) ?? false
-                
-                // Append text with formatting information
-                var text = attributedText.attributedSubstring(from: range).string
-                if isBold {
-                    text = "<b>\(text)</b>"
-                }
-                if isItalic {
-                    text = "<i>\(text)</i>"
-                }
-                formattedText += text
-                
-                // Check for checklist items
-                if let bullet = attributes[.attachment] as? NSTextAttachment, 
-                    let image = bullet.image, image.size == CGSize(width: 12, height: 12) {
-                    checklistItems.append(text)
-                }
-            }
-            return (formattedText, checklistItems)
-        }
-        
-        func saveNoteToCoreData(title: String, body: String, checklistItems: [String] = []) {
-            // Save the data into Core Data with the provided formatting information
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-            let managedContext = appDelegate.persistentContainer.viewContext
-            let note = QuickNote(context: managedContext)
-            note.title = title
-            note.body = body
-            note.created = Date()
-            
-            // Save the checklist items
-            if !checklistItems.isEmpty {
-                // Assuming you have a separate entity for checklist items and a relationship between notes and checklist items
-                for item in checklistItems {
-                    let checklistItem = QuickNote()
-                    checklistItem.body = item
-                }
-            }
-            
-            do {
-                try managedContext.save()
+
+        viewModel.saveNoteWithAttributedText(title: title, attributedText: attributedText, completion: handleSaveCompletion)
+    }
+    
+    private func handleSaveCompletion(result: Result<Void, Error>) {
+        switch result {
+        case .success:
+            DispatchQueue.main.async {
+                self.delegate?.didFinishAddingNote()
                 let alertController = UIAlertController(title: "Note Saved", message: "Note has been saved successfully!", preferredStyle: .alert)
                 let cancelAction = UIAlertAction(title: "Ok", style: .cancel) { [weak self] _ in
                     guard let self = self else { return }
-                    self.delegate?.didFinishAddingNote()
                     self.dismiss(animated: true, completion: nil)
                 }
                 alertController.addAction(cancelAction)
-                present(alertController, animated: true)
-            } catch let error as NSError {
-                fatalError("Error saving note to Core Data. \(error.userInfo)")
+                self.present(alertController, animated: true)
             }
+        case .failure(let error):
+            // Handle error
+            print("Error saving note: \(error)")
         }
     }
-    
 }
 
 extension AddNoteViewController: UITextViewDelegate {

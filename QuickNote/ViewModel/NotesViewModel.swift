@@ -5,9 +5,7 @@
 //  Created by Ruchira  on 18/04/24.
 //
 
-import CoreData
-
-
+import Foundation
 
 class NotesViewModel {
     
@@ -29,19 +27,10 @@ class NotesViewModel {
     
     
     private(set) var notes: [QuickNote] = []
-    private let managedContext: NSManagedObjectContext
-    
-    init(managedContext: NSManagedObjectContext) {
-        self.managedContext = managedContext
-    }
     
     func fetchNotes() {
-        
-        guard let appDelegate = AppDelegate.getAppDelegate() else { return }
-        let managedContext = appDelegate.persistentContainer.viewContext
-
         do {
-            notes = try managedContext.fetch(QuickNote.fetchRequest())
+            notes = try CoreDataManager.shared.fetchNotes()
             self.viewState = .ready(.getNotes)
 
         } catch let error as NSError {
@@ -50,10 +39,8 @@ class NotesViewModel {
     }
     
     func deleteItem(_ note: QuickNote, completion: @escaping () -> Void) {
-        managedContext.delete(note)
-        
         do {
-            try managedContext.save()
+            try CoreDataManager.shared.delete(note: note)
             completion()
         } catch let error as NSError {
             print("Error deleting note: \(error), \(error.userInfo)")
